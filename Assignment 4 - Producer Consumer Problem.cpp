@@ -6,10 +6,10 @@
 
 using namespace std;
 
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 5
 
 struct Buffer {
-  int in, out, buff[BUFFER_SIZE] = {0};
+  int in, out, buff[BUFFER_SIZE] = {0}, count = 0;
   sem_t empty, full;
   pthread_mutex_t bufflock;
   void init();
@@ -34,6 +34,7 @@ void* producer(void* arg)
     pthread_mutex_lock(&buffer.bufflock);
     printf("\n[ Producer #%d ] - Produced Item %d", i, ++item);
     buffer.buff[(buffer.in++) % BUFFER_SIZE] = item;
+    buffer.count += 1;
     buffer.showBuff();
     pthread_mutex_unlock(&buffer.bufflock);
     sem_post(&buffer.full);
@@ -50,6 +51,7 @@ void* consumer(void* arg)
     int cons = buffer.buff[(buffer.out) % BUFFER_SIZE];
     printf("\n[ Consumer #%d ] - Consumed Item %d", i, cons);
     buffer.buff[(buffer.out++) % BUFFER_SIZE] = 0;
+    buffer.count -= 1;
     buffer.showBuff();
     pthread_mutex_unlock(&buffer.bufflock);
     sem_post(&buffer.empty);
@@ -58,6 +60,11 @@ void* consumer(void* arg)
 }
 
 void Buffer::showBuff() {
+  if (buffer.count == 0) {
+    cout << endl << endl << "Buffer Empty!" << endl;
+  } else if (buffer.count == BUFFER_SIZE) {
+    cout << endl << endl << "Buffer Full!" << endl;
+    }
   cout << endl << "Buffer:\n======================================================\n";
   for(int element: buffer.buff)
     cout << setw(5) << element;
