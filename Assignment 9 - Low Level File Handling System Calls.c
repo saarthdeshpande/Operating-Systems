@@ -13,7 +13,10 @@ int main()
 	n = read(0, buff, 50);
 
 	// creating a new file using open.
-	fd = open("file.txt",O_CREAT | O_RDWR, 0777); 
+	fd = open("file.txt",O_CREAT | O_RDWR, 0777);
+
+	// O_RDONLY: read only, O_WRONLY: write only, O_RDWR: read and write, O_CREAT: create file if it doesn’t exist, O_EXCL: prevent creation if it already exists
+
 	printf("\nWriting to the file and closing ...\n");
 	write(fd, buff, n);
 	int close(int fd);
@@ -24,9 +27,8 @@ int main()
 	printf("%d bytes were read.\n", sz); 
 	c[sz] = '\0'; 
 	printf("\nThose bytes are as follows: \n%s\n", c); 
-	// write(1, buff, n);
 
-	//closing the file
+	// closing the file
 	int close(int fd);
 	
 	return 0;	
